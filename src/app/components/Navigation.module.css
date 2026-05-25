@@ -1,0 +1,77 @@
+.nav {
+  background-color: #333;
+  padding: 10px 20px;
+  display: flex;
+  justify-content: space-between; /* ссылки слева, auth справа */
+  align-items: center;
+}
+
+.menu {
+  display: flex;
+  gap: 20px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.menu li a {
+  color: #fff;
+  text-decoration: none;
+  font-weight: 500;
+  transition:
+    color 0.2s ease,
+    border-bottom 0.2s ease;
+  padding-bottom: 2px;
+}
+
+.menu li a:hover {
+  color: #ffcc00;
+}
+
+.active {
+  border-bottom: 2px solid #ffcc00;
+  color: #ffcc00;
+}
+
+.authBlock {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.authLink {
+  color: #fff;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s ease;
+  padding: 6px 10px;
+  border-radius: 4px;
+}
+
+.authLink:hover {
+  color: #ffcc00;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.logoutBtn {
+  background-color: #f44336;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 600;
+  transition:
+    background-color 0.2s ease,
+    transform 0.1s ease;
+}
+
+.logoutBtn:hover {
+  background-color: #d32f2f;
+  transform: scale(1.05);
+}
+
+.sessionActive {
+  box-shadow: 0 0 6px rgba(255, 255, 255, 0.6);
+}
