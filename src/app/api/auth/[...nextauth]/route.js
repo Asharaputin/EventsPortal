@@ -2,10 +2,8 @@ import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import clientPromise from "@/lib/mongodb";
-import { authConfig } from "./auth.config";
 
 const handler = NextAuth({
-  ...authConfig,
   providers: [
     CredentialsProvider({
       name: "Credentials",
@@ -21,17 +19,13 @@ const handler = NextAuth({
         const user = await usersCollection.findOne({
           email: credentials.email,
         });
-        if (!user) {
-          return null;
-        }
+        if (!user) return null;
 
         const isValid = await bcrypt.compare(
           credentials.password,
           user.password,
         );
-        if (!isValid) {
-          return null;
-        }
+        if (!isValid) return null;
 
         return {
           id: user._id.toString(),
@@ -41,6 +35,30 @@ const handler = NextAuth({
       },
     }),
   ],
+
+  session: {
+    strategy: "jwt",
+  },
+  pages: {
+    signIn: "/signin",
+  },
+  secret: process.env.NEXTAUTH_SECRET,
+  trustHost: true,
+
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      if (token && session.user) {
+        session.user.id = token.id;
+      }
+      return session;
+    },
+  },
 });
 
 export { handler as GET, handler as POST };

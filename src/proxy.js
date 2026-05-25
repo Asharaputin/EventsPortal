@@ -1,8 +1,9 @@
 import { withAuth } from "next-auth/middleware";
-import { authConfig } from "./app/api/auth/[...nextauth]/auth.config";
 
 export default withAuth({
-  ...authConfig,
+  pages: {
+    signIn: "/signin",
+  },
 });
 
 export const config = {
