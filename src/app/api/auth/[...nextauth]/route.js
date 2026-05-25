@@ -12,26 +12,48 @@ const handler = NextAuth({
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        const client = await clientPromise;
-        const db = client.db("auth-demo");
-        const usersCollection = db.collection("users");
+        try {
+          if (!credentials?.email || !credentials?.password) {
+            console.log("👉 Ошибка: Не переданы email или пароль");
+            return null;
+          }
 
-        const user = await usersCollection.findOne({
-          email: credentials.email,
-        });
-        if (!user) return null;
+          const client = await clientPromise;
+          const db = client.db("auth-demo"); // Убедитесь, что имя базы совпадает со строкой в Atlas!
+          const usersCollection = db.collection("users");
 
-        const isValid = await bcrypt.compare(
-          credentials.password,
-          user.password,
-        );
-        if (!isValid) return null;
+          // Принудительно приводим email к нижнему регистру, если в базе он так сохранен
+          const searchEmail = credentials.email.toLowerCase().trim();
+          console.log("👉 Ищем пользователя с email:", searchEmail);
 
-        return {
-          id: user._id.toString(),
-          email: user.email,
-          name: user.name || "User",
-        };
+          const user = await usersCollection.findOne({ email: searchEmail });
+
+          if (!user) {
+            console.log("❌ Пользователь в базе данных НЕ найден");
+            return null;
+          }
+          console.log("✅ Пользователь найден в БД, проверяем пароль...");
+
+          const isValid = await bcrypt.compare(
+            credentials.password,
+            user.password,
+          );
+
+          if (!isValid) {
+            console.log("❌ Пароль НЕ совпал");
+            return null;
+          }
+
+          console.log("🎉 Авторизация успешна для:", user.email);
+          return {
+            id: user._id.toString(),
+            email: user.email,
+            name: user.name || "User",
+          };
+        } catch (error) {
+          console.error("🚨 КРИТИЧЕСКАЯ ОШИБКА В AUTHORIZE:", error);
+          return null;
+        }
       },
     }),
   ],
