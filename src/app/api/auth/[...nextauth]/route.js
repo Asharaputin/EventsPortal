@@ -1,9 +1,11 @@
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import clientPromise from "@/lib/mongodb";
 import bcrypt from "bcryptjs";
+import clientPromise from "@/lib/mongodb";
+import { authConfig } from "./auth.config";
 
-export const authConfig = {
+const handler = NextAuth({
+  ...authConfig,
   providers: [
     CredentialsProvider({
       name: "Credentials",
@@ -39,11 +41,6 @@ export const authConfig = {
       },
     }),
   ],
-  session: { strategy: "jwt" },
-  secret: process.env.NEXTAUTH_SECRET,
-  trustHost: true,
-};
-
-const handler = NextAuth(authConfig);
+});
 
 export { handler as GET, handler as POST };
