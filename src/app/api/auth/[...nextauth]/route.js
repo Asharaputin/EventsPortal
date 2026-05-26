@@ -12,6 +12,7 @@ const handler = NextAuth({
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
+        console.log("!!Authorize called with:", credentials);
         try {
           if (!credentials?.email || !credentials?.password) {
             return null;
@@ -52,6 +53,7 @@ const handler = NextAuth({
   ],
 
   session: {
+    maxAge: 60 * 60 * 24,
     strategy: "jwt",
   },
   pages: {
@@ -60,14 +62,20 @@ const handler = NextAuth({
   secret: process.env.NEXTAUTH_SECRET,
   trustHost: true,
 
+  jwt: {
+    maxAge: 60 * 60 * 24,
+  },
+
   callbacks: {
     async jwt({ token, user }) {
+      console.log("!!!JWT callback:", { token, user });
       if (user) {
         token.id = user.id;
       }
       return token;
     },
     async session({ session, token }) {
+      console.log("!!!Session callback:", { session, token });
       if (token && session.user) {
         session.user.id = token.id;
       }

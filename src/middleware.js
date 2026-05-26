@@ -6,7 +6,7 @@ export default withAuth({
   },
   secret: process.env.NEXTAUTH_SECRET,
 });
-
+console.log("Middleware executed with secret:", process.env.NEXTAUTH_SECRET);
 export const config = {
   matcher: ["/", "/events/:path*", "/change-password"],
 };
