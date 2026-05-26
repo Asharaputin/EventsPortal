@@ -4,8 +4,6 @@ import bcrypt from "bcryptjs";
 
 export async function POST(req) {
   const { email, oldPassword, newPassword } = await req.json();
-  console.log("oldPassword", oldPassword);
-  console.log("newPassword", newPassword);
 
   if (!email || !oldPassword || !newPassword) {
     return NextResponse.json(
@@ -27,10 +25,8 @@ export async function POST(req) {
       );
     }
 
-    console.log("user.password", user.password);
-
     const isValid = await bcrypt.compare(oldPassword, user.password);
-    console.log("isValid", isValid);
+
     if (!isValid) {
       return NextResponse.json(
         { message: "Старый пароль неверный" },

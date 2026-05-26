@@ -22,7 +22,6 @@ const handler = NextAuth({
           const usersCollection = db.collection("users");
 
           const searchEmail = credentials.email.toLowerCase().trim();
-          console.log("👉 Ищем пользователя с email:", searchEmail);
 
           const user = await usersCollection.findOne({ email: searchEmail });
 
@@ -60,8 +59,6 @@ const handler = NextAuth({
   },
   secret: process.env.NEXTAUTH_SECRET,
   trustHost: true,
-
-  debug: process.env.NODE_ENV === "development" || true,
 
   callbacks: {
     async jwt({ token, user }) {

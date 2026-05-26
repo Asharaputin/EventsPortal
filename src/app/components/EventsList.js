@@ -38,6 +38,7 @@ export default function EventsList({ events: initialEvents }) {
             <h2>Добавить событие</h2>
             <EventsForm
               onSuccess={async () => {
+                setLoading(true);
                 await mutate();
                 setShowForm(false);
               }}
