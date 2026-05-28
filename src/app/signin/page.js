@@ -1,28 +1,37 @@
 "use client";
 
-import { useState } from "react";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useNotification } from "@/app/context/notification-context";
+import FormFactory from "@/components/FormFactory";
+import { signinSchema } from "@/validation/signinSchema";
+import { useNotification } from "@/context/notification-context";
 import styles from "./Signin.module.css";
 
 export default function SigninPage() {
-  const [formData, setFormData] = useState({ email: "", password: "" });
   const router = useRouter();
   const { showNotification } = useNotification();
 
-  const onChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+  const fields = [
+    {
+      name: "email",
+      type: "email",
+      placeholder: "Введите email",
+      required: true,
+    },
+    {
+      name: "password",
+      type: "password",
+      placeholder: "Введите пароль",
+      required: true,
+    },
+  ];
 
-  const onSubmit = async (e) => {
-    e.preventDefault();
-
+  const onSubmit = async (data) => {
     const result = await signIn("credentials", {
       redirect: false,
-      email: formData.email,
-      password: formData.password,
+      email: data.email,
+      password: data.password,
     });
 
     if (!result?.error) {
@@ -36,33 +45,12 @@ export default function SigninPage() {
   return (
     <div className={styles.signinPage}>
       <h1>Вход</h1>
-      <form onSubmit={onSubmit} className={styles.signinForm}>
-        <div className={styles.formGroup}>
-          <label htmlFor="email">Email</label>
-          <input
-            type="email"
-            name="email"
-            placeholder="Введите email"
-            value={formData.email}
-            onChange={onChange}
-            required
-          />
-        </div>
-
-        <div className={styles.formGroup}>
-          <label htmlFor="password">Пароль</label>
-          <input
-            type="password"
-            name="password"
-            placeholder="Введите пароль"
-            value={formData.password}
-            onChange={onChange}
-            required
-          />
-        </div>
-
-        <button type="submit">Войти</button>
-      </form>
+      <FormFactory
+        schema={signinSchema}
+        fields={fields}
+        onSubmit={onSubmit}
+        styles={{ ...styles, form: styles.signinForm }}
+      />
 
       <p className={styles.switchAuth}>
         Нет аккаунта?{" "}

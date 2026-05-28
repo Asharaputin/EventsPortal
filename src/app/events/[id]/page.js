@@ -1,5 +1,5 @@
-import { getEventById } from "@/lib/api";
-import EventDetail from "@/app/components/EventDetail";
+import { getEventById } from "../actions";
+import EventDetail from "@/components/EventDetail";
 
 export default async function EventDetailPage({ params }) {
   const paramsObject = await params;

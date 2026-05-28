@@ -1,70 +1,56 @@
 "use client";
 
-import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useNotification } from "@/app/context/notification-context";
+import { useNotification } from "@/context/notification-context";
+import FormFactory from "@/components/FormFactory";
+import { usersSchema } from "@/validation/usersSchema";
+import { signupUser } from "./actions";
 import styles from "./Signup.module.css";
 
 export default function SignupPage() {
-  const [formData, setFormData] = useState({ email: "", password: "" });
   const { showNotification } = useNotification();
   const router = useRouter();
 
-  const onChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+  const fields = [
+    {
+      name: "nickname",
+      type: "text",
+      placeholder: "Введите nickname",
+      required: true,
+    },
+    {
+      name: "email",
+      type: "email",
+      placeholder: "Введите email",
+      required: true,
+    },
+    {
+      name: "password",
+      type: "password",
+      placeholder: "Введите пароль",
+      required: true,
+    },
+  ];
 
-  const onSubmit = async (e) => {
-    e.preventDefault();
-
-    const res = await fetch("/api/auth/signup", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formData),
-    });
-
-    const data = await res.json();
-
-    if (res.ok) {
-      showNotification(data.message, "success");
+  const onSubmit = async (data) => {
+    try {
+      const res = await signupUser(data);
+      showNotification(res.message, "success");
       router.push("/signin");
-    } else {
-      showNotification(data.message, "error");
+    } catch (err) {
+      showNotification(err.message, "error");
     }
   };
 
   return (
     <div className={styles.signupPage}>
       <h1>Регистрация</h1>
-      <form onSubmit={onSubmit} className={styles.signupForm}>
-        <div className={styles.formGroup}>
-          <label htmlFor="email">Email</label>
-          <input
-            id="email"
-            type="email"
-            name="email"
-            placeholder="Введите email"
-            value={formData.email}
-            onChange={onChange}
-            required
-          />
-        </div>
-
-        <div className={styles.formGroup}>
-          <label htmlFor="password">Пароль</label>
-          <input
-            id="password"
-            type="password"
-            name="password"
-            placeholder="Введите пароль"
-            value={formData.password}
-            onChange={onChange}
-            required
-          />
-        </div>
-
-        <button type="submit">Зарегистрироваться</button>
-      </form>
+      <FormFactory
+        schema={usersSchema}
+        fields={fields}
+        onSubmit={onSubmit}
+        styles={{ ...styles, form: styles.signupForm }}
+      />
 
       <p className={styles.switchAuth}>
         Уже есть аккаунт? <a href="/signin">Войти</a>

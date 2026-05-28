@@ -2,40 +2,37 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import useSWR from "swr";
 import Image from "next/image";
 import styles from "./EventDetail.module.css";
 import { useNotification } from "../context/notification-context";
-import EventsForm from "../events/EventsForm";
+import EventsForm from "@/app/events/forms/EventsForm";
 import ConfirmModal from "./ConfirmModal";
-
-const fetcher = (url) => fetch(url).then((res) => res.json());
+import { deleteEvent, getEventById } from "@/app/events/actions";
 
 export default function EventDetail({ event }) {
+  const [freshEvent, setFreshEvent] = useState(event);
   const [showConfirm, setShowConfirm] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const router = useRouter();
-
-  const {
-    data: freshEvent,
-    mutate,
-    error,
-  } = useSWR(`/api/events/${event._id}`, fetcher, { fallbackData: event });
-
-  if (error) return <p>Ошибка загрузки</p>;
-  if (!freshEvent) return <p>Загрузка...</p>;
-
   const { showNotification } = useNotification();
 
-  const onDelete = async () => {
-    const res = await fetch(`/api/events/${freshEvent._id}`, {
-      method: "DELETE",
-    });
+  const refreshEvent = async () => {
+    const updated = await getEventById(event._id);
+    console.log("Updated", updated);
+    setFreshEvent(updated);
+  };
 
-    if (res.ok) {
+  const onSuccess = async () => {
+    await refreshEvent();
+    setShowForm(false);
+  };
+
+  const onDelete = async () => {
+    try {
+      await deleteEvent(freshEvent._id);
       showNotification("Событие удалено", "success");
       router.replace("/events");
-    } else {
+    } catch {
       showNotification("Ошибка при удалении", "error");
     }
     setShowConfirm(false);
@@ -108,13 +105,7 @@ export default function EventDetail({ event }) {
               ✖
             </button>
             <h2>Редактировать событие</h2>
-            <EventsForm
-              event={freshEvent}
-              onSuccess={async () => {
-                await mutate();
-                setShowForm(false);
-              }}
-            />
+            <EventsForm event={freshEvent} onSuccess={onSuccess} />
           </div>
         </div>
       )}

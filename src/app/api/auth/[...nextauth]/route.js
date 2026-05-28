@@ -42,7 +42,7 @@ const handler = NextAuth({
           return {
             id: user._id.toString(),
             email: user.email,
-            name: user.name || "User",
+            nickname: user.nickname,
           };
         } catch (error) {
           console.error("Ошибка авторизации:", error);
@@ -70,14 +70,14 @@ const handler = NextAuth({
     async jwt({ token, user }) {
       console.log("!!!JWT callback:", { token, user });
       if (user) {
-        token.id = user.id;
+        token.nickname = user.nickname;
       }
       return token;
     },
     async session({ session, token }) {
       console.log("!!!Session callback:", { session, token });
       if (token && session.user) {
-        session.user.id = token.id;
+        session.user.nickname = token.nickname;
       }
       return session;
     },

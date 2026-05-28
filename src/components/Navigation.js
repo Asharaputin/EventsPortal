@@ -2,7 +2,8 @@
 import Link from "next/link";
 import { signOut, useSession } from "next-auth/react";
 import { usePathname } from "next/navigation";
-import { useNotification } from "@/app/context/notification-context";
+import { useNotification } from "@/context/notification-context";
+import { UserIcon } from "@heroicons/react/24/solid";
 import styles from "./Navigation.module.css";
 
 export default function Navigation() {
@@ -44,6 +45,10 @@ export default function Navigation() {
       <div className={styles.authBlock}>
         {session ? (
           <>
+            <span className={styles.nickname}>
+              <UserIcon className={styles.userIcon} />{" "}
+              {session.user.nickname || session.user.email}
+            </span>
             <Link
               href="/change-password"
               className={

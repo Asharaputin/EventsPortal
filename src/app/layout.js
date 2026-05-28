@@ -1,6 +1,6 @@
-import Navigation from "./components/Navigation";
-import Footer from "./components/Footer";
-import Notification from "./components/Notification";
+import Navigation from "@/components/Navigation";
+import Footer from "@/components/Footer";
+import Notification from "@/components/Notification";
 import Providers from "./providers";
 import "./globals.css";
 

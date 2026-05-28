@@ -1,6 +1,6 @@
 "use client";
 
-import { useNotification } from "../context/notification-context";
+import { useNotification } from "@/context/notification-context";
 import "./Notification.css";
 
 export default function Notification() {

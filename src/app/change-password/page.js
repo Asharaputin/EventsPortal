@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useNotification } from "@/app/context/notification-context";
+import { useNotification } from "@/context/notification-context";
 import { useSession } from "next-auth/react";
 import styles from "./ChangePassword.module.css";
 

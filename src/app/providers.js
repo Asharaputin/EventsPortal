@@ -1,7 +1,7 @@
 "use client";
 
 import { SessionProvider } from "next-auth/react";
-import { NotificationProvider } from "./context/notification-context";
+import { NotificationProvider } from "../context/notification-context";
 
 export default function Providers({ children }) {
   return (

@@ -1,8 +1,8 @@
-import { getAllEvents } from "@/lib/api";
-import EventsList from "@/app/components/EventsList";
+import { getEvents } from "@/app/events/actions";
+import EventsList from "@/components/EventsList";
 
 export default async function EventsPage() {
-  const events = await getAllEvents();
+  const events = await getEvents();
 
   if (!events || events.length === 0) {
     return <h1>Событий пока нет</h1>;
