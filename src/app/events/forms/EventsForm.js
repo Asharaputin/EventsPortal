@@ -3,7 +3,6 @@
 import { eventSchema } from "@/validation/eventSchema";
 import { useNotification } from "@/context/notification-context";
 import FormFactory from "@/components/FormFactory";
-import styles from "./EventsForm.module.css";
 import { createEvent, updateEvent } from "../actions";
 
 export default function EventsForm({ event, onSuccess }) {
@@ -42,7 +41,17 @@ export default function EventsForm({ event, onSuccess }) {
       fields={fields}
       initialData={event}
       onSubmit={onSubmit}
-      styles={styles}
+      styles={{
+        form: "flex flex-col gap-3 mt-4",
+        input:
+          "p-2 border border-gray-300 rounded-md text-base focus:border-yellow-400 focus:outline-none",
+        textarea:
+          "p-2 border border-gray-300 rounded-md text-base min-h-[100px] resize-y focus:border-yellow-400 focus:outline-none",
+        button:
+          "p-3 bg-gray-800 text-white rounded-md text-base font-medium cursor-pointer transition hover:bg-yellow-400 hover:text-gray-900 hover:scale-105",
+        error: "text-red-600 text-sm mt-[-4px]",
+        errorField: "border-2 border-red-500 bg-red-100",
+      }}
     />
   );
 }

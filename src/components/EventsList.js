@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
+import { useVirtualizer } from "@tanstack/react-virtual";
 import EventCard from "./EventCard";
 import EventsForm from "@/app/events/forms/EventsForm";
-import styles from "./EventsList.module.css";
 import { getEvents } from "@/app/events/actions";
 import { PlusCircleIcon, XMarkIcon } from "@heroicons/react/24/solid";
 
@@ -12,6 +12,16 @@ export default function EventsList({ events: initialEvents }) {
   const [loading, setLoading] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [closing, setClosing] = useState(false);
+
+  const parentRef = useRef(null);
+  const rowCount = Math.ceil(events.length / 3);
+
+  const rowVirtualizer = useVirtualizer({
+    count: rowCount,
+    getScrollElement: () => parentRef.current,
+    estimateSize: () => 440,
+    overscan: 10,
+  });
 
   const refreshEvents = async () => {
     setLoading(true);
@@ -34,34 +44,76 @@ export default function EventsList({ events: initialEvents }) {
   };
 
   return (
-    <div>
-      <button onClick={() => setShowForm(true)} className={styles.addButton}>
-        <PlusCircleIcon className={styles.addIcon} />
+    <div className="w-full max-w-8xl mx-auto p-6">
+      <button
+        onClick={() => setShowForm(true)}
+        className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-md font-semibold hover:bg-blue-700 transition transform hover:-translate-y-0.5"
+      >
+        <PlusCircleIcon className="w-5 h-5 text-white" />
         Добавить событие
       </button>
 
       {showForm && (
         <div
-          className={`${styles.modalOverlay} ${closing ? styles.closing : ""}`}
+          className={`fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 ${
+            closing ? "animate-fadeOutScale" : "animate-fadeInScale"
+          }`}
         >
           <div
-            className={`${styles.modalContent} ${closing ? styles.closing : ""}`}
+            className={`relative bg-white p-6 rounded-lg w-[500px] max-w-[90%] ${
+              closing ? "animate-fadeOutScale" : "animate-fadeInScale"
+            }`}
           >
-            <button onClick={handleClose} className={styles.closeBtn}>
-              <XMarkIcon className={styles.closeIcon} />
+            <button
+              onClick={handleClose}
+              className="absolute top-3 right-3 bg-transparent border-none cursor-pointer p-1 rounded hover:bg-gray-100 transition"
+            >
+              <XMarkIcon className="w-6 h-6 text-red-500" />
             </button>
-            <h2>Добавить событие</h2>
+            <h2 className="text-xl font-semibold mb-4">Добавить событие</h2>
             <EventsForm onSuccess={handleSuccess} />
           </div>
         </div>
       )}
 
-      {loading && <p>Обновляем список событий…</p>}
+      {loading && (
+        <p className="mt-4 text-gray-600">Обновляем список событий…</p>
+      )}
+      <div
+        ref={parentRef}
+        className="mt-6 h-[80vh] overflow-x-hidden overflow-y-auto border rounded-lg bg-gray-50 px-6 py-6"
+      >
+        <div
+          style={{
+            height: `${rowVirtualizer.getTotalSize()}px`,
+            position: "relative",
+          }}
+        >
+          {rowVirtualizer.getVirtualItems().map((virtualRow) => {
+            const startIndex = virtualRow.index * 3;
+            const rowEvents = events.slice(startIndex, startIndex + 3);
 
-      <div className={styles.eventsGrid}>
-        {events.map((event) => (
-          <EventCard key={event._id} event={event} />
-        ))}
+            return (
+              <div
+                key={virtualRow.index}
+                className="absolute top-0 left-0 w-full flex justify-center"
+                style={{
+                  transform: `translateY(${virtualRow.start}px)`,
+                  height: "360px",
+                }}
+              >
+                {/* Сетка внутри контейнера занимает 100% его ширины */}
+                <div className="grid grid-cols-3 gap-6 w-full">
+                  {rowEvents.map((event) => (
+                    <div key={event._id} className="w-full">
+                      <EventCard event={event} />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          })}
+        </div>
       </div>
     </div>
   );
