@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import EventCard from "./EventCard";
 import EventsForm from "@/app/events/forms/EventsForm";
@@ -12,6 +12,22 @@ export default function EventsList({ events: initialEvents }) {
   const [loading, setLoading] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [closing, setClosing] = useState(false);
+  const [sortedEvents, setSortedEvents] = useState(initialEvents);
+  const [sortKey, setSortKey] = useState("city");
+
+  useEffect(() => {
+    const worker = new Worker(
+      new URL("../workers/eventWorker.js", import.meta.url),
+    );
+
+    worker.onmessage = (e) => {
+      setSortedEvents(e.data);
+    };
+
+    worker.postMessage({ events, sortKey });
+
+    return () => worker.terminate();
+  }, [events, sortKey]);
 
   const parentRef = useRef(null);
   const rowCount = Math.ceil(events.length / 3);
@@ -52,6 +68,30 @@ export default function EventsList({ events: initialEvents }) {
         <PlusCircleIcon className="w-5 h-5 text-white" />
         Добавить событие
       </button>
+      <div className="flex gap-4 mt-4">
+        <button
+          onClick={() => setSortKey("city")}
+          className={`px-4 py-2 rounded-md font-semibold transition 
+      ${
+        sortKey === "city"
+          ? "bg-green-600 text-white hover:bg-green-700"
+          : "bg-gray-200 text-gray-800 hover:bg-gray-300"
+      }`}
+        >
+          Сортировать по городу
+        </button>
+        <button
+          onClick={() => setSortKey("date")}
+          className={`px-4 py-2 rounded-md font-semibold transition 
+      ${
+        sortKey === "date"
+          ? "bg-purple-600 text-white hover:bg-purple-700"
+          : "bg-gray-200 text-gray-800 hover:bg-gray-300"
+      }`}
+        >
+          Сортировать по дате
+        </button>
+      </div>
 
       {showForm && (
         <div
@@ -91,7 +131,7 @@ export default function EventsList({ events: initialEvents }) {
         >
           {rowVirtualizer.getVirtualItems().map((virtualRow) => {
             const startIndex = virtualRow.index * 3;
-            const rowEvents = events.slice(startIndex, startIndex + 3);
+            const rowEvents = sortedEvents.slice(startIndex, startIndex + 3);
 
             return (
               <div

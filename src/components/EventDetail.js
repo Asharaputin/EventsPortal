@@ -36,25 +36,6 @@ export default function EventDetail({ event }) {
     setShowConfirm(false);
   };
 
-  if (!freshEvent) {
-    return (
-      <div className="max-w-md mx-auto mt-16 p-6 bg-white rounded-lg shadow text-center">
-        <h2 className="text-red-600 mb-3 text-xl font-semibold">
-          Событие не найдено
-        </h2>
-        <p className="text-gray-600 mb-5">
-          Похоже, указан неверный идентификатор или событие было удалено.
-        </p>
-        <button
-          onClick={() => router.push("/events")}
-          className="bg-blue-600 text-white px-4 py-2 rounded-md font-semibold hover:bg-blue-700 transition"
-        >
-          ⬅ Вернуться к списку событий
-        </button>
-      </div>
-    );
-  }
-
   return (
     <div className="max-w-2xl mx-auto p-6 text-center">
       <h1 className="text-2xl font-bold mb-4">{freshEvent.title}</h1>

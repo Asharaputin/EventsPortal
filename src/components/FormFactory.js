@@ -40,6 +40,14 @@ export default function FormFactory({
     await onSubmit(parsed.data);
   };
 
+  const getInputClassName = (fieldName) => {
+    const baseStyle = styles?.input || "";
+    const errorStyle = errorFields.includes(fieldName)
+      ? ` ${styles?.errorField || ""}`
+      : "";
+    return `${baseStyle}${errorStyle}`.trim();
+  };
+
   return (
     <form onSubmit={handleSubmit} className={styles?.form}>
       {fields.map((field) =>
@@ -51,9 +59,7 @@ export default function FormFactory({
             value={form[field.name] || ""}
             onChange={handleChange}
             required={field.required}
-            className={
-              errorFields.includes(field.name) ? styles.errorField : ""
-            }
+            className={getInputClassName(field.name)}
           />
         ) : (
           <input
@@ -64,14 +70,14 @@ export default function FormFactory({
             value={form[field.name] || ""}
             onChange={handleChange}
             required={field.required}
-            className={
-              errorFields.includes(field.name) ? styles.errorField : ""
-            }
+            className={getInputClassName(field.name)}
           />
         ),
       )}
+
       {error && <p className={styles?.error}>{error}</p>}
-      <button type="submit">
+
+      <button type="submit" className={styles?.button}>
         {initialData?._id ? "Обновить" : "Сохранить"}
       </button>
     </form>
