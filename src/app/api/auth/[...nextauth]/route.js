@@ -39,7 +39,7 @@ const handler = NextAuth({
           if (!isValid) {
             return null;
           }
-
+          console.log("Authorize result user:", user);
           return {
             id: user._id.toString(),
             email: user.email,
@@ -102,6 +102,7 @@ const handler = NextAuth({
       return true;
     },
     async jwt({ token, user, account }) {
+      console.log("JWT callback input:", { token, user, account });
       if (account) {
         token.provider = account.provider;
       }
@@ -110,15 +111,17 @@ const handler = NextAuth({
         token.nickname = user.nickname;
       }
 
+      console.log("JWT callback output:", token);
       return token;
     },
 
     async session({ session, token }) {
+      console.log("Session callback input:", { session, token });
       if (token && session.user) {
         session.user.nickname = token.nickname;
         session.user.provider = token.provider;
       }
-
+      console.log("Final session object:", session);
       return session;
     },
   },
