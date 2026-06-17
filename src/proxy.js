@@ -1,17 +1,11 @@
 import { withAuth } from "next-auth/middleware";
 
-export default withAuth(
-  function middleware(req) {
-    console.log("Middleware running for path:", req.nextUrl.pathname);
-    console.log("Middleware token:", req.nextauth?.token);
+export default withAuth({
+  pages: {
+    signIn: "/signin",
   },
-  {
-    pages: {
-      signIn: "/signin",
-    },
-    secret: process.env.NEXTAUTH_SECRET,
-  },
-);
+  secret: process.env.NEXTAUTH_SECRET,
+});
 
 export const config = {
   matcher: ["/", "/events", "/events/:path*", "/change-password"],

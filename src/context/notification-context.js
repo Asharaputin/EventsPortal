@@ -8,8 +8,14 @@ export function NotificationProvider({ children }) {
   const [notification, setNotification] = useState(null);
 
   const showNotification = (message, type = "success") => {
-    setNotification({ message, type });
-    setTimeout(() => setNotification(null), 5000);
+    const notif = { message, type };
+    localStorage.setItem("notification", JSON.stringify(notif));
+    setNotification(notif);
+
+    setTimeout(() => {
+      localStorage.removeItem("notification");
+      setNotification(null);
+    }, 4000);
   };
 
   return (

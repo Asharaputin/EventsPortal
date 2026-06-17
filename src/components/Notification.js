@@ -1,9 +1,20 @@
 "use client";
 
+import { useEffect } from "react";
 import { useNotification } from "@/context/notification-context";
 
 export default function Notification() {
-  const { notification } = useNotification();
+  const { notification, showNotification } = useNotification();
+
+  useEffect(() => {
+    if (!notification) {
+      const saved = localStorage.getItem("notification");
+      if (saved) {
+        const { message, type } = JSON.parse(saved);
+        showNotification(message, type);
+      }
+    }
+  }, [notification, showNotification]);
 
   if (!notification) return null;
 
