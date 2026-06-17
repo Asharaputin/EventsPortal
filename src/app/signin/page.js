@@ -59,6 +59,16 @@ export default function SigninPage() {
         }}
       />
 
+      <hr className="my-6" />
+
+      <button
+        onClick={() => signIn("google", { callbackUrl: "/events" })}
+        className="w-full flex items-center justify-center gap-2 border border-gray-300 rounded-md p-3 font-semibold text-base hover:bg-gray-100 transition-all cursor-pointer"
+      >
+        <img src="/google.svg" alt="Google" className="w-5 h-5" />
+        Войти через Google
+      </button>
+
       <p className="mt-5 text-sm text-center">
         Нет аккаунта?{" "}
         <Link

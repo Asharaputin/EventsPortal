@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { FaEdit, FaTrash, FaTimes, FaArrowLeft } from "react-icons/fa";
 import Image from "next/image";
 import { useNotification } from "../context/notification-context";
 import EventsForm from "@/app/events/forms/EventsForm";
@@ -38,6 +39,15 @@ export default function EventDetail({ event }) {
 
   return (
     <div className="max-w-2xl mx-auto p-6 text-center">
+      <div className="flex justify-start mb-4">
+        <button
+          onClick={() => router.back()} // или router.push("/events")
+          className="flex items-center gap-2 text-blue-600 hover:text-blue-800 font-medium transition"
+        >
+          <FaArrowLeft />
+          <span>Назад</span>
+        </button>
+      </div>
       <h1 className="text-2xl font-bold mb-4">{freshEvent.title}</h1>
       {freshEvent.image && (
         <Image
@@ -61,15 +71,17 @@ export default function EventDetail({ event }) {
       <div className="flex justify-center gap-4 mt-6">
         <button
           onClick={() => setShowForm(true)}
-          className="bg-blue-600 text-white px-5 py-2 rounded-md font-medium hover:bg-blue-700 transition transform hover:scale-105"
+          className="bg-blue-600 text-white px-5 py-2 rounded-md font-medium hover:bg-blue-700 transition transform hover:scale-105 flex items-center gap-2"
         >
-          ✏️ Редактировать
+          <FaEdit className="inline-block" />
+          <span>Редактировать</span>
         </button>
         <button
           onClick={() => setShowConfirm(true)}
-          className="bg-red-600 text-white px-5 py-2 rounded-md font-medium hover:bg-red-700 transition transform hover:scale-105"
+          className="bg-red-600 text-white px-5 py-2 rounded-md font-medium hover:bg-red-700 transition transform hover:scale-105 flex items-center gap-2"
         >
-          🗑️ Удалить
+          <FaTrash className="inline-block" />
+          <span>Удалить</span>
         </button>
       </div>
 
@@ -82,14 +94,29 @@ export default function EventDetail({ event }) {
       )}
 
       {showForm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center animate-fadeInScale">
-          <div className="bg-white p-6 rounded-lg w-[500px] max-w-[90%] max-h-[80vh] overflow-y-auto relative animate-fadeInScale">
+        <div
+          className="fixed inset-0 bg-gray-400 bg-opacity-70 flex items-center justify-center animate-fadeInScale"
+          onClick={() => setShowForm(false)}
+        >
+          <div
+            className="bg-white p-6 rounded-lg w-[500px] max-w-[90%] max-h-[80vh] overflow-y-auto relative animate-fadeInScale"
+            onClick={(e) => e.stopPropagation()}
+          >
             <button
               onClick={() => setShowForm(false)}
               className="absolute top-3 right-3 text-gray-600 hover:text-red-600 transition"
             >
-              ✖
+              <FaTimes />
             </button>
+            <div className="flex justify-start mb-4">
+              <button
+                onClick={() => router.push("/events")}
+                className="flex items-center gap-2 text-blue-600 hover:text-blue-800 font-medium transition"
+              >
+                <FaArrowLeft />
+                <span>Назад</span>
+              </button>
+            </div>
             <h2 className="text-xl font-semibold mb-4">
               Редактировать событие
             </h2>

@@ -1,4 +1,5 @@
 import NextAuth from "next-auth";
+import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import clientPromise from "@/lib/mongodb";
@@ -50,8 +51,12 @@ const handler = NextAuth({
         }
       },
     }),
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    }),
   ],
-
+  secret: process.env.NEXTAUTH_SECRET,
   session: {
     maxAge: 60 * 60 * 24,
     strategy: "jwt",
@@ -67,18 +72,53 @@ const handler = NextAuth({
   },
 
   callbacks: {
-    async jwt({ token, user }) {
-      console.log("!!!JWT callback:", { token, user });
+    async signIn({ user, account }) {
+      if (account.provider === "google") {
+        try {
+          const client = await clientPromise;
+          const db = client.db("auth-demo");
+          const usersCollection = db.collection("users");
+
+          const email = user.email.toLowerCase().trim();
+          let existingUser = await usersCollection.findOne({ email });
+
+          if (!existingUser) {
+            const newUser = {
+              email,
+              nickname: user.name || email.split("@")[0],
+              password: null,
+              createdAt: new Date(),
+            };
+            await usersCollection.insertOne(newUser);
+            existingUser = newUser;
+          }
+
+          user.nickname = existingUser.nickname;
+        } catch (err) {
+          console.error("Ошибка при Google sign-in:", err);
+          return false;
+        }
+      }
+      return true;
+    },
+    async jwt({ token, user, account }) {
+      if (account) {
+        token.provider = account.provider;
+      }
+
       if (user) {
         token.nickname = user.nickname;
       }
+
       return token;
     },
+
     async session({ session, token }) {
-      console.log("!!!Session callback:", { session, token });
       if (token && session.user) {
         session.user.nickname = token.nickname;
+        session.user.provider = token.provider;
       }
+
       return session;
     },
   },

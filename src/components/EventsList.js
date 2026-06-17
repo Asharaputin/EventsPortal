@@ -95,7 +95,7 @@ export default function EventsList({ events: initialEvents }) {
 
       {showForm && (
         <div
-          className={`fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 ${
+          className={`fixed inset-0 bg-gray-400 bg-opacity-50 flex items-center justify-center z-50 ${
             closing ? "animate-fadeOutScale" : "animate-fadeInScale"
           }`}
         >
