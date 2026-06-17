@@ -2,13 +2,11 @@
 
 import { signIn } from "next-auth/react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import FormFactory from "@/components/FormFactory";
 import { signinSchema } from "@/validation/signinSchema";
 import { useNotification } from "@/context/notification-context";
 
 export default function SigninPage() {
-  const router = useRouter();
   const { showNotification } = useNotification();
 
   const fields = [
@@ -28,14 +26,13 @@ export default function SigninPage() {
 
   const onSubmit = async (data) => {
     const result = await signIn("credentials", {
-      redirect: false,
       email: data.email,
       password: data.password,
+      callbackUrl: "/events",
     });
 
     if (!result?.error) {
       showNotification("Вы успешно вошли!", "success");
-      router.push("/events");
     } else {
       showNotification("Неверный email или пароль", "error");
     }
