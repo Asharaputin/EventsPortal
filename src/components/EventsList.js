@@ -142,7 +142,6 @@ export default function EventsList({ events: initialEvents }) {
                   height: "360px",
                 }}
               >
-                {/* Сетка внутри контейнера занимает 100% его ширины */}
                 <div className="grid grid-cols-3 gap-6 w-full">
                   {rowEvents.map((event) => (
                     <div key={event._id} className="w-full">
